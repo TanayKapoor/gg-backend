@@ -9,6 +9,9 @@ venv/
 ENV/
 .VENV/
 
+# SSH Keys 
+ssh_keys/
+
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
