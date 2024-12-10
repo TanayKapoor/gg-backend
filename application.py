@@ -6,11 +6,11 @@ import requests
 import os
 from flasgger import Swagger
 
-app = Flask(__name__)
-swagger = Swagger(app)
-CORS(app)
+application = Flask(__name__)
+swagger = Swagger(application)
+CORS(application)
 
-@app.route('/api/hello', methods=['GET'])
+@application.route('/api/hello', methods=['GET'])
 def hello():
     """
     An example endpoint.
@@ -23,4 +23,5 @@ def hello():
     return jsonify(response)
 
 
-app.run(debug=True)
+if __name__ == '__main__':
+    application.run(host="0.0.0.0", port=5000)
