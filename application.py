@@ -1,4 +1,3 @@
-# application.py
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flasgger import Swagger
@@ -19,15 +18,15 @@ application.register_blueprint(auth_bp, url_prefix='/auth')
 
 @application.route('/api/hello', methods=['GET'])
 def hello():
-        """
-        An example endpoint.
-        ---
-        responses:
-            200:
-                description: A successful response
-        """
-        response = "Hello, World!"
-        return jsonify(response)
+    """
+    An example endpoint.
+    ---
+    responses:
+      200:
+        description: A successful response
+    """
+    response = "Hello, World!"
+    return jsonify(response)
 
 if __name__ == '__main__':
-        application.run(host="0.0.0.0", port=5000)
+    application.run(host="0.0.0.0", port=5000)
