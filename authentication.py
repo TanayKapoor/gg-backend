@@ -41,6 +41,7 @@ users = {
 }
 
 @auth_bp.route('/login', methods=['POST'])
+@auth_bp.route('/login', methods=['POST'])
 def login():
     identifier = request.json.get('identifier', None)
     password = request.json.get('password', None)
@@ -86,6 +87,7 @@ def auth_callback():
     except Exception as e:
         logging.error("Error during OAuth callback", exc_info=True)
         return jsonify({"error": "Internal Server Error"}), 500
+
 
 @auth_bp.route('/logout', methods=['POST'])
 @jwt_required()
