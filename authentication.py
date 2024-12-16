@@ -4,7 +4,9 @@ import binascii
 from flask import Blueprint, request, jsonify, redirect, url_for, session
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
 from authlib.integrations.flask_client import OAuth
+from dotenv import load_dotenv
 
+load_dotenv()
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -12,8 +14,8 @@ auth_bp = Blueprint('auth', __name__)
 
 # JWT and configuration
 auth_bp.config = {
-    'JWT_SECRET_KEY': 'your_jwt_secret_key',
-    'SECRET_KEY': 'your_oauth_secret_key'
+    'JWT_SECRET_KEY': os.getenv('JWT_SECRET_KEY'),
+    'SECRET_KEY': os.getenv('OAUTH_SECRET_KEY'),
 }
 jwt = JWTManager()
 oauth = OAuth()
@@ -21,8 +23,8 @@ oauth = OAuth()
 # OAuth configuration for Google
 oauth.register(
     name='google',
-    client_id='682315773396-j00bqmrr9pvjbm2evl33e59ji7bmge4t.apps.googleusercontent.com',
-    client_secret='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',
+    client_id=os.getenv('GOOGLE_CLIENT_ID'),
+    client_secret=os.getenv('GOOGLE_CLIENT_SECRET'),
     authorize_url='https://accounts.google.com/o/oauth2/auth',
     authorize_params=None,
     access_token_url='https://oauth2.googleapis.com/token',
