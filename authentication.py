@@ -7,7 +7,7 @@ from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 from extensions import db, jwt, oauth  # Import db, jwt, and oauth from extensions
-import datetime
+from datetime import datetime
 
 load_dotenv()
 
@@ -60,29 +60,54 @@ class User(db.Model):
         return f"<User {self.username}>"
 
 
-# Register endpoint
 @auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.json
     username = data.get('username')
     email = data.get('email')
     password = data.get('password')
-    first_name = data.get('first_name')
-    last_name = data.get('last_name')
-    birth_date = data.get('birth_date')
-    phone_number = data.get('phone_number')
-    created_at = datetime.datetime.now()
+    created_at = datetime.now()
 
     if User.query.filter((User.username == username) | (User.email == email)).first():
         return jsonify({"msg": "User already exists"}), 400
 
     hashed_password = generate_password_hash(password)
-    new_user = User(username=username, email=email, password_hash=hashed_password, first_name=first_name, last_name=last_name, birth_date=birth_date, phone_number=phone_number, created_at=created_at)
+    new_user = User(username=username, email=email, password_hash=hashed_password, created_at=created_at)
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify({"msg": "User registered successfully"}), 201
+    # Create access token
+    access_token = create_access_token(identity=email)
 
+    return jsonify({"msg": "User registered successfully", "access_token": access_token}), 201
+
+@auth_bp.route('/update_user', methods=['PUT'])
+@jwt_required()
+def update_user():
+    current_user_email = get_jwt_identity()
+    user = User.query.filter_by(email=current_user_email).first()
+
+    if not user:
+        return jsonify({"msg": "User not found"}), 404
+
+    data = request.json
+    new_username = data.get('username', user.username)
+
+    # Check if the new username is already taken by another user
+    if new_username != user.username and User.query.filter_by(username=new_username).first():
+        return jsonify({"msg": "Username is already taken"}), 400
+
+    user.username = new_username
+    user.avatar = data.get('avatar', user.avatar)
+    user.first_name = data.get('first_name', user.first_name)
+    user.last_name = data.get('last_name', user.last_name)
+    user.birth_date = data.get('birth_date', user.birth_date)
+    user.phone_number = data.get('phone_number', user.phone_number)
+    user.updated_at = datetime.now()
+
+    db.session.commit()
+
+    return jsonify({"msg": "User updated successfully"}), 200
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
