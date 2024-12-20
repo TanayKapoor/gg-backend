@@ -38,6 +38,9 @@ jobs:
       - name: Run flask app
         run: |
           source venv/bin/activate
-          flask --app application.py --debug run
+          flask --app application.py --debug run &
           sleep 10
-          kill %1
+          pkill -f "flask"
+
+      - name: Complete job
+        run: echo "Job completed!"
